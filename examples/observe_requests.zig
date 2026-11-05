@@ -50,7 +50,7 @@ pub fn main(init: std.process.Init) !void {
         .onError = &Stats.onError,
     };
 
-    var repository = try github.client.reposGetRaw(&client, "christianhelle", "github-sdk-for-zig");
+    var repository = try github.client.reposGetRaw(&client, "christianhelle", "openapi2zig");
     defer repository.deinit();
     var missing = try github.client.reposGetRaw(&client, "christianhelle", "this-repository-does-not-exist");
     defer missing.deinit();
