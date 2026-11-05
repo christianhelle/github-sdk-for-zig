@@ -19,8 +19,28 @@ pub const ApiResult = runtime.ApiResult;
 pub const RawResponse = runtime.RawResponse;
 pub const HttpObserver = runtime.HttpObserver;
 
+/// The base URL of the public GitHub REST API.
+pub const api_base_url = "https://api.github.com";
+
+/// Creates a client for api.github.com. Pass an empty token for anonymous
+/// requests. `Client.init` alone leaves the base URL empty, which makes every
+/// request fail, so prefer this unless you target GitHub Enterprise Server.
+pub fn init(allocator: std.mem.Allocator, io: std.Io, token: []const u8) Client {
+    var github = Client.init(allocator, io, token);
+    github.withBaseUrl(api_base_url);
+    return github;
+}
+
 test {
     _ = runtime;
+}
+
+test "init targets api.github.com and keeps the token" {
+    var github = init(std.testing.allocator, std.testing.io, "secret");
+    defer github.deinit();
+
+    try std.testing.expectEqualStrings(api_base_url, github.base_url);
+    try std.testing.expectEqualStrings("secret", github.api_key);
 }
 
 const TestRepository = struct { full_name: []const u8 };
