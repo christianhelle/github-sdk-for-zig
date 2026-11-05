@@ -92,6 +92,8 @@ var issues = try github.client.issuesListForRepoRaw(
 defer issues.deinit();
 ```
 
+The [search_repositories](../examples/search_repositories.zig) example does the same with a search query.
+
 The same operations are also grouped by path under `github.client.resources`, with lowercased names. For example, `github.client.resources.repos.reposget` calls `reposGet`.
 
 ## Choose a call form
@@ -147,7 +149,7 @@ defer raw.deinit();
 if (raw.status != .ok) return error.GitHubApiError;
 ```
 
-The Raw form never turns a status into an error, which makes it the right choice when a status is the answer. For example, `pullsCheckIfMergedRaw` answers 204 for merged and 404 for not merged.
+The Raw form never turns a status into an error, which makes it the right choice when a status is the answer. For example, `pullsCheckIfMergedRaw` answers 204 for merged and 404 for not merged, as the [check_merged](../examples/check_merged.zig) example shows.
 
 ## Memory ownership
 
@@ -244,7 +246,7 @@ The URL is used as you give it, so percent-encode any values you put in it. `get
 
 ## Rate limits and errors
 
-GitHub reports rate limiting with a 403 or 429 status, which you can see in the Result and Raw forms. Because response headers aren't exposed, `Retry-After` and `X-RateLimit-*` aren't available. Call `rateLimitGet` to check your remaining quota instead.
+GitHub reports rate limiting with a 403 or 429 status, which you can see in the Result and Raw forms. Because response headers aren't exposed, `Retry-After` and `X-RateLimit-*` aren't available. Call `rateLimitGet` to check your remaining quota instead, as the [rate_limit](../examples/rate_limit.zig) example does.
 
 The client doesn't retry requests or apply timeouts. Add retries in your own code if you need them, following GitHub's [best practices](https://docs.github.com/rest/using-the-rest-api/best-practices-for-using-the-rest-api).
 
@@ -258,6 +260,8 @@ Don't share a `Client` between threads. Create one per thread, each with its own
 var worker = github.init(allocator, io, token);
 defer worker.deinit();
 ```
+
+The [parallel_requests](../examples/parallel_requests.zig) example fetches several repositories this way.
 
 ## Observing requests
 
@@ -292,6 +296,8 @@ client.http_observer = .{
 ```
 
 `onRequest` receives the request headers, including `Authorization`, so don't log them as they are. `onResponse` currently receives an empty header list.
+
+The [observe_requests](../examples/observe_requests.zig) example counts requests and failures through `ctx`.
 
 ## Compile times
 
