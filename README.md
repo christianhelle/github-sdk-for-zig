@@ -74,6 +74,10 @@ The [examples](examples) are compiled in CI, and you can run them from a clone o
 zig build run-get_repository -- christianhelle chlogr
 ```
 
+### Real-world reference
+
+For a production-grade, full-featured consumer, see [chlogr](https://github.com/christianhelle/chlogr), a changelog generator built on this package. Its [GitHub client](https://github.com/christianhelle/chlogr/blob/main/src/github_api.zig) shows paginated fetching of releases, pull requests and issues into its own structs, and worker threads with one client each.
+
 ## Development
 
 ```bash
