@@ -22,3 +22,38 @@ pub const HttpObserver = runtime.HttpObserver;
 test {
     _ = runtime;
 }
+
+const TestRepository = struct { full_name: []const u8 };
+
+fn testResponse(status: std.http.Status, body: []const u8) !RawResponse {
+    return .{
+        .allocator = std.testing.allocator,
+        .status = status,
+        .body = try std.testing.allocator.dupe(u8, body),
+    };
+}
+
+test "parseRawResponse returns the parsed value on success" {
+    const raw = try testResponse(.ok, "{\"full_name\":\"owner/repo\",\"ignored\":1}");
+    var result = try client.parseRawResponse(TestRepository, raw);
+    defer result.deinit();
+
+    try std.testing.expectEqualStrings("owner/repo", result.ok.value().full_name);
+}
+
+test "parseRawResponse keeps the body of an API error" {
+    const raw = try testResponse(.not_found, "{\"message\":\"Not Found\"}");
+    var result = try client.parseRawResponse(TestRepository, raw);
+    defer result.deinit();
+
+    try std.testing.expectEqual(std.http.Status.not_found, result.api_error.status);
+    try std.testing.expectEqualStrings("{\"message\":\"Not Found\"}", result.api_error.body);
+}
+
+test "parseRawResponse reports a body that does not match the model" {
+    const raw = try testResponse(.ok, "{\"unexpected\":true}");
+    var result = try client.parseRawResponse(TestRepository, raw);
+    defer result.deinit();
+
+    try std.testing.expectEqualStrings("MissingField", result.parse_error.error_name);
+}
