@@ -14,7 +14,7 @@ const SearchResult = struct {
 
 const Repository = struct {
     full_name: []const u8,
-    stargazers_count: i64,
+    stargazers_count: u64,
     description: ?[]const u8 = null,
 };
 
