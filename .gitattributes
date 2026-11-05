@@ -1,0 +1,4 @@
+src/client.zig linguist-generated
+src/models.zig linguist-generated
+src/runtime.zig linguist-generated
+docs/openapi.json linguist-generated
