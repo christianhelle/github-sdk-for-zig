@@ -2,6 +2,7 @@ const std = @import("std");
 
 const examples = [_][]const u8{
     "get_repository",
+    "handle_errors",
 };
 
 pub fn build(b: *std.Build) void {
