@@ -10,6 +10,7 @@ const examples = [_][]const u8{
     "search_repositories",
     "rate_limit",
     "observe_requests",
+    "parallel_requests",
 };
 
 pub fn build(b: *std.Build) void {

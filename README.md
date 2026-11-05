@@ -68,6 +68,7 @@ The [examples](examples) are compiled in CI, and you can run them from a clone o
 | [search_repositories](examples/search_repositories.zig) | Optional query parameters |
 | [rate_limit](examples/rate_limit.zig) | Reading your remaining requests |
 | [observe_requests](examples/observe_requests.zig) | Logging requests and pinning the API version |
+| [parallel_requests](examples/parallel_requests.zig) | One client per thread |
 
 ```bash
 zig build run-get_repository -- christianhelle chlogr
