@@ -147,7 +147,7 @@ defer raw.deinit();
 if (raw.status != .ok) return error.GitHubApiError;
 ```
 
-The Raw form never turns a status into an error, which makes it the right choice when a status is the answer. For example, `pullsCheckIfMergedRaw` answers 204 for merged and 404 for not merged. See [Slow 204 responses](#slow-204-responses) for a delay that affects this call.
+The Raw form never turns a status into an error, which makes it the right choice when a status is the answer. For example, `pullsCheckIfMergedRaw` answers 204 for merged and 404 for not merged.
 
 ## Memory ownership
 
@@ -298,60 +298,6 @@ client.http_observer = .{
 `src/client.zig` is about 3.8 MB, but Zig only compiles what you call. A first Debug build of a small program using one operation took about 15 seconds on a Windows desktop, and rebuilds use the cache.
 
 ## Known limitations
-
-### Affected operations
-
-openapi2zig 0.6.1 emits URL arguments in the order the description lists its parameters, not the order they appear in the path. This affects 38 of the 1,224 operations:
-
-- **Compile error:** the swapped arguments have different types, so calling the operation doesn't compile.
-- **Silently wrong URL:** the swapped arguments have the same type, so the call compiles but requests the wrong path. It may fail with a 404 or, in the worst case, reach a different resource. Don't call these operations, especially the ones that delete or restore.
-
-Use a [request by path](#requests-by-path) for these until the client is regenerated with a fixed generator.
-
-| Operation | Correct path | Effect |
-| --- | --- | --- |
-| `actionsListCustomImageVersionsForOrg` | `/orgs/{org}/actions/hosted-runners/images/custom/{image_definition_id}/versions` | Compile error |
-| `packagesGetPackageVersionForUser` | `/users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Compile error |
-| `projectsAddFieldForOrg` | `/orgs/{org}/projectsV2/{project_number}/fields` | Compile error |
-| `projectsDeleteItemForOrg` | `/orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Compile error |
-| `projectsDeleteItemForUser` | `/users/{username}/projectsV2/{project_number}/items/{item_id}` | Compile error |
-| `projectsGetFieldForOrg` | `/orgs/{org}/projectsV2/{project_number}/fields/{field_id}` | Compile error |
-| `projectsGetFieldForUser` | `/users/{username}/projectsV2/{project_number}/fields/{field_id}` | Compile error |
-| `projectsGetForOrg` | `/orgs/{org}/projectsV2/{project_number}` | Compile error |
-| `projectsGetForUser` | `/users/{username}/projectsV2/{project_number}` | Compile error |
-| `projectsGetOrgItem` | `/orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Compile error |
-| `projectsGetUserItem` | `/users/{username}/projectsV2/{project_number}/items/{item_id}` | Compile error |
-| `projectsListFieldsForOrg` | `/orgs/{org}/projectsV2/{project_number}/fields` | Compile error |
-| `projectsListFieldsForUser` | `/users/{username}/projectsV2/{project_number}/fields` | Compile error |
-| `projectsListItemsForOrg` | `/orgs/{org}/projectsV2/{project_number}/items` | Compile error |
-| `projectsListItemsForUser` | `/users/{username}/projectsV2/{project_number}/items` | Compile error |
-| `projectsListViewItemsForOrg` | `/orgs/{org}/projectsV2/{project_number}/views/{view_number}/items` | Compile error |
-| `projectsListViewItemsForUser` | `/users/{username}/projectsV2/{project_number}/views/{view_number}/items` | Compile error |
-| `projectsUpdateItemForOrg` | `/orgs/{org}/projectsV2/{project_number}/items/{item_id}` | Compile error |
-| `projectsUpdateItemForUser` | `/users/{username}/projectsV2/{project_number}/items/{item_id}` | Compile error |
-| `actionsDeleteEnvironmentVariable` | `/repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Silently wrong URL |
-| `actionsUpdateEnvironmentVariable` | `/repos/{owner}/{repo}/environments/{environment_name}/variables/{name}` | Silently wrong URL |
-| `packagesDeletePackageForOrg` | `/orgs/{org}/packages/{package_type}/{package_name}` | Silently wrong URL |
-| `packagesDeletePackageForUser` | `/users/{username}/packages/{package_type}/{package_name}` | Silently wrong URL |
-| `packagesDeletePackageVersionForOrg` | `/orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Silently wrong URL |
-| `packagesDeletePackageVersionForUser` | `/users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Silently wrong URL |
-| `packagesGetAllPackageVersionsForPackageOwnedByOrg` | `/orgs/{org}/packages/{package_type}/{package_name}/versions` | Silently wrong URL |
-| `packagesGetAllPackageVersionsForPackageOwnedByUser` | `/users/{username}/packages/{package_type}/{package_name}/versions` | Silently wrong URL |
-| `packagesGetPackageForOrganization` | `/orgs/{org}/packages/{package_type}/{package_name}` | Silently wrong URL |
-| `packagesGetPackageForUser` | `/users/{username}/packages/{package_type}/{package_name}` | Silently wrong URL |
-| `packagesGetPackageVersionForOrganization` | `/orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}` | Silently wrong URL |
-| `packagesRestorePackageForOrg` | `/orgs/{org}/packages/{package_type}/{package_name}/restore` | Silently wrong URL |
-| `packagesRestorePackageForUser` | `/users/{username}/packages/{package_type}/{package_name}/restore` | Silently wrong URL |
-| `packagesRestorePackageVersionForOrg` | `/orgs/{org}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Silently wrong URL |
-| `packagesRestorePackageVersionForUser` | `/users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}/restore` | Silently wrong URL |
-| `reposCreateDeploymentProtectionRule` | `/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules` | Silently wrong URL |
-| `reposDisableDeploymentProtectionRule` | `/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/{protection_rule_id}` | Silently wrong URL |
-| `reposGetAllDeploymentProtectionRules` | `/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules` | Silently wrong URL |
-| `reposListCustomDeploymentRuleIntegrations` | `/repos/{owner}/{repo}/environments/{environment_name}/deployment_protection_rules/apps` | Silently wrong URL |
-
-### Slow 204 responses
-
-When a request without a body gets a 204 response, the generated client keeps reading until GitHub closes the connection. The call succeeds with the right status, but it took about 30 seconds in testing with `pullsCheckIfMergedRaw`. Expect the same delay from other operations that send no body and answer 204, such as `reposDelete`. A request by path has the same delay, because it uses the same code.
 
 ### Generator leftovers
 
