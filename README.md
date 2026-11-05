@@ -66,6 +66,7 @@ The [examples](examples) are compiled in CI, and you can run them from a clone o
 | [raw_request](examples/raw_request.zig) | Calling an endpoint by path, with custom headers |
 | [check_merged](examples/check_merged.zig) | Using a status code as the answer |
 | [search_repositories](examples/search_repositories.zig) | Optional query parameters |
+| [rate_limit](examples/rate_limit.zig) | Reading your remaining requests |
 
 ```bash
 zig build run-get_repository -- christianhelle chlogr
