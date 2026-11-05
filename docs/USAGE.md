@@ -10,14 +10,14 @@ Requires Zig 0.17.0 or later.
 zig fetch --save git+https://github.com/christianhelle/github-sdk-for-zig#v0.1.0
 ```
 
-Add the module in `build.zig`. The package module is named `github_sdk_for_zig`, and this guide imports it as `github`:
+Add the module in `build.zig`:
 
 ```zig
-const github = b.dependency("github_sdk_for_zig", .{
+const github = b.dependency("github", .{
     .target = target,
     .optimize = optimize,
 });
-exe.root_module.addImport("github", github.module("github_sdk_for_zig"));
+exe.root_module.addImport("github", github.module("github"));
 ```
 
 The package exposes:
