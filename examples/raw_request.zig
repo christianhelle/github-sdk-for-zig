@@ -41,7 +41,7 @@ pub fn main(init: std.process.Init) !void {
             std.debug.print("{d} of {d} requests left\n", .{ rate.remaining, rate.limit });
         },
         .api_error => |response| {
-            std.debug.print("GitHub answered {d}: {s}\n", .{ @intFromEnum(response.status), response.body });
+            std.debug.print("GitHub answered {d}: {s}\n", .{ @backingInt(response.status), response.body });
             return error.GitHubApiError;
         },
         .parse_error => |failure| {

@@ -19,7 +19,7 @@ pub fn main(init: std.process.Init) !void {
     switch (result) {
         .ok => |*repository| std.debug.print("found {s}\n", .{repository.value().full_name}),
         .api_error => |response| std.debug.print("GitHub answered {d}: {s}\n", .{
-            @intFromEnum(response.status),
+            @backingInt(response.status),
             response.body,
         }),
         .parse_error => |failure| std.debug.print("{s} while parsing: {s}\n", .{

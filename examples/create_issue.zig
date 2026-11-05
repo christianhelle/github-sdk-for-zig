@@ -30,7 +30,7 @@ pub fn main(init: std.process.Init) !void {
     switch (result) {
         .ok => |*issue| std.debug.print("created {s}\n", .{issue.value().html_url}),
         .api_error => |response| {
-            std.debug.print("GitHub answered {d}: {s}\n", .{ @intFromEnum(response.status), response.body });
+            std.debug.print("GitHub answered {d}: {s}\n", .{ @backingInt(response.status), response.body });
             return error.GitHubApiError;
         },
         .parse_error => |failure| {

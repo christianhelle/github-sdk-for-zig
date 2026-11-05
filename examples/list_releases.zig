@@ -32,7 +32,7 @@ pub fn main(init: std.process.Init) !void {
         defer raw.deinit();
 
         if (raw.status.class() != .success) {
-            std.debug.print("GitHub answered {d}: {s}\n", .{ @intFromEnum(raw.status), raw.body });
+            std.debug.print("GitHub answered {d}: {s}\n", .{ @backingInt(raw.status), raw.body });
             return error.GitHubApiError;
         }
 
