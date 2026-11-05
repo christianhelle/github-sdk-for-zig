@@ -22,28 +22,31 @@ pub fn main(init: std.process.Init) !void {
 
     // Unlike generated operations, requestRaw and its variants do not send the
     // token for you.
-    const authorization: []const std.http.Header = &.{.{
+    const authorization = [_]std.http.Header{.{
         .name = "Authorization",
         .value = try std.fmt.allocPrint(arena, "Bearer {s}", .{token}),
     }};
+    const extra_headers: []const std.http.Header = if (token.len > 0) &authorization else &.{};
     const url = try std.fmt.allocPrint(arena, "{s}/rate_limit", .{client.base_url});
 
-    const raw = try github.client.requestRawWithExtraHeaders(
-        &client,
-        .GET,
-        url,
-        null,
-        if (token.len > 0) authorization else &.{},
-    );
-    defer raw.deinit();
+    const raw = try github.client.requestRawWithExtraHeaders(&client, .GET, url, null, extra_headers);
 
+    // parseRawResponse takes ownership of the raw response.
     var result = try github.client.parseRawResponse(RateLimit, raw);
+    defer result.deinit();
+
     switch (result) {
         .ok => |*rate_limit| {
-            defer rate_limit.deinit();
             const rate = rate_limit.value().rate;
             std.debug.print("{d} of {d} requests left\n", .{ rate.remaining, rate.limit });
         },
-        else => return error.UnexpectedResponse,
+        .api_error => |response| {
+            std.debug.print("GitHub answered {d}: {s}\n", .{ @intFromEnum(response.status), response.body });
+            return error.GitHubApiError;
+        },
+        .parse_error => |failure| {
+            std.debug.print("{s} while parsing: {s}\n", .{ failure.error_name, failure.raw.body });
+            return error.UnexpectedResponse;
+        },
     }
 }
