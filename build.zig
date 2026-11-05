@@ -7,6 +7,7 @@ const examples = [_][]const u8{
     "create_issue",
     "raw_request",
     "check_merged",
+    "search_repositories",
 };
 
 pub fn build(b: *std.Build) void {
