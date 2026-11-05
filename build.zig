@@ -1,5 +1,9 @@
 const std = @import("std");
 
+const examples = [_][]const u8{
+    "get_repository",
+};
+
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -24,4 +28,23 @@ pub fn build(b: *std.Build) void {
     });
     const check_step = b.step("check", "Compile every generated operation");
     check_step.dependOn(&compile_check.step);
+
+    const examples_step = b.step("examples", "Build the examples");
+    for (examples) |name| {
+        const exe = b.addExecutable(.{
+            .name = name,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path(b.fmt("examples/{s}.zig", .{name})),
+                .target = target,
+                .optimize = optimize,
+                .imports = &.{.{ .name = "github", .module = mod }},
+            }),
+        });
+        examples_step.dependOn(&b.addInstallArtifact(exe, .{}).step);
+
+        const run = b.addRunArtifact(exe);
+        run.addPassthruArgs();
+        const run_step = b.step(b.fmt("run-{s}", .{name}), b.fmt("Run the {s} example", .{name}));
+        run_step.dependOn(&run.step);
+    }
 }
