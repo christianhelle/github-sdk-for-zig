@@ -64,6 +64,7 @@ The [examples](examples) are compiled in CI, and you can run them from a clone o
 | [list_releases](examples/list_releases.zig) | Pagination into your own struct |
 | [create_issue](examples/create_issue.zig) | Sending a JSON request body |
 | [raw_request](examples/raw_request.zig) | Calling an endpoint by path, with custom headers |
+| [check_merged](examples/check_merged.zig) | Using a status code as the answer |
 
 ```bash
 zig build run-get_repository -- christianhelle chlogr
