@@ -4,7 +4,7 @@ This guide covers the GitHub REST API client in this package. The client is gene
 
 ## Install
 
-Requires Zig 0.17.0 or later.
+Requires Zig 0.17.1 or later.
 
 ```bash
 zig fetch --save git+https://github.com/christianhelle/github-sdk-for-zig#v0.1.0

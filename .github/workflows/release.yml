@@ -20,7 +20,7 @@ jobs:
 
       - uses: mlugg/setup-zig@v2
         with:
-          version: 0.17.0
+          version: 0.17.1
 
       - name: Check the version matches build.zig.zon
         run: grep -qF ".version = \"$VERSION\"" build.zig.zon

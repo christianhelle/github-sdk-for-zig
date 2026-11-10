@@ -1,5 +1,5 @@
 [![CI](https://github.com/christianhelle/github-sdk-for-zig/actions/workflows/ci.yml/badge.svg)](https://github.com/christianhelle/github-sdk-for-zig/actions/workflows/ci.yml)
-[![Zig Version](https://img.shields.io/badge/zig-0.17.0%2B-orange.svg)](https://ziglang.org/download/)
+[![Zig Version](https://img.shields.io/badge/zig-0.17.1%2B-orange.svg)](https://ziglang.org/download/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 # GitHub SDK for Zig
@@ -12,7 +12,7 @@ The client in `src/client.zig`, `src/models.zig` and `src/runtime.zig` is genera
 
 ## Install
 
-Requires Zig 0.17.0 or later.
+Requires Zig 0.17.1 or later.
 
 ```bash
 zig fetch --save git+https://github.com/christianhelle/github-sdk-for-zig#v0.1.0

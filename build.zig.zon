@@ -4,7 +4,7 @@
     // Changing this has security and trust implications. See the Zig package
     // documentation before regenerating it.
     .fingerprint = 0x637cabe927da6466,
-    .minimum_zig_version = "0.17.0",
+    .minimum_zig_version = "0.17.1",
     .dependencies = .{},
     // docs/ is left out so consumers do not download the 13 MB OpenAPI description.
     .paths = .{
